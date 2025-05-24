@@ -90,9 +90,7 @@ public class JobScheduleServiceImpl implements JobScheduleService {
             } else {
                 // 当前任务的调度时间在C范围内
                 // 2.3、trigger-pre-read：time-ring trigger && make next-trigger-time
-
                 executeRingTask(ringData, jobInfo);
-
             }
         }
 
@@ -103,6 +101,13 @@ public class JobScheduleServiceImpl implements JobScheduleService {
         return true;
     }
 
+    /**
+     * 计算任务，将任务时间放到ringData中，让ringThread处理
+     *
+     * @param ringData
+     * @param jobInfo
+     * @throws ParseException
+     */
     private void executeRingTask(Map<Integer, List<Integer>> ringData, XxlJobInfo jobInfo) throws ParseException {
         // 1、make ring second
         int ringSecond = (int)((jobInfo.getTriggerNextTime()/1000)%60);
