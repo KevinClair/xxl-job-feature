@@ -40,6 +40,7 @@ public class JobScheduleHelper {
 
     public void start(){
 
+        // todo 调整为调度线程池，延迟5秒后执行，固定每1秒执行一次。
         // schedule thread
         scheduleThread = new Thread(new Runnable() {
             @Override
@@ -93,7 +94,7 @@ public class JobScheduleHelper {
         scheduleThread.setName("xxl-job, admin JobScheduleHelper#scheduleThread");
         scheduleThread.start();
 
-
+        // todo 调整为调度线程池，固定每一秒执行一次。
         // ring thread
         ringThread = new Thread(new Runnable() {
             @Override
@@ -103,6 +104,7 @@ public class JobScheduleHelper {
 
                     // align second
                     try {
+                        // 睡眠一秒钟，每一秒执行一次
                         TimeUnit.MILLISECONDS.sleep(1000 - System.currentTimeMillis() % 1000);
                     } catch (InterruptedException e) {
                         if (!ringThreadToStop) {
@@ -112,7 +114,14 @@ public class JobScheduleHelper {
                     try {
                         // second data
                         List<Integer> ringItemData = new ArrayList<>();
-                        int nowSecond = Calendar.getInstance().get(Calendar.SECOND);   // 避免处理耗时太长，跨过刻度，向前校验一个刻度；
+                        // 避免处理耗时太长，跨过刻度，向前校验一个刻度；
+                        /**
+                         * 这里主要是为了解决如果前一个任务执行时间过长，导致当前刻度的任务没有被及时处理。
+                         * 那么下次执行任务时，向前校验一个刻度，将之前的任务并行处理掉，所以这里理论上来说可能会出现延迟的。
+                         * 例如：
+                         *  某个任务需要在2025-05-01 00:00:02执行，第一次ringThread会在00:00:01执行，但是由于执行时间过长，下一次ringThread可能会在00:00:03执行，那么为了兜底执行00:00:02的任务，所以向前校验一个刻度，00:00:03和00:00:02的任务都会被处理。
+                         */
+                        int nowSecond = Calendar.getInstance().get(Calendar.SECOND);
                         for (int i = 0; i < 2; i++) {
                             int i1 = (nowSecond + 60 - i) % 60;
                             List<Integer> tmpData = ringData.remove(i1);
