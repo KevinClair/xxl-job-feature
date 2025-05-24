@@ -84,27 +84,14 @@ public class JobScheduleServiceImpl implements JobScheduleService {
                 if (jobInfo.getTriggerStatus()==1 && nowTime + Constants.PRE_READ_MS > jobInfo.getTriggerNextTime()) {
 
                     // 1、make ring second
-                    int ringSecond = (int)((jobInfo.getTriggerNextTime()/1000)%60);
-
-                    // 2、push time ring
-                    pushTimeRing(ringSecond, jobInfo.getId(), ringData);
-
-                    // 3、fresh next
-                    refreshNextValidTime(jobInfo, new Date(jobInfo.getTriggerNextTime()));
+                    executeRingTask(ringData, jobInfo);
 
                 }
             } else {
                 // 当前任务的调度时间在C范围内
                 // 2.3、trigger-pre-read：time-ring trigger && make next-trigger-time
 
-                // 1、make ring second
-                int ringSecond = (int)((jobInfo.getTriggerNextTime()/1000)%60);
-
-                // 2、push time ring
-                pushTimeRing(ringSecond, jobInfo.getId(), ringData);
-
-                // 3、fresh next
-                refreshNextValidTime(jobInfo, new Date(jobInfo.getTriggerNextTime()));
+                executeRingTask(ringData, jobInfo);
 
             }
         }
@@ -114,6 +101,17 @@ public class JobScheduleServiceImpl implements JobScheduleService {
             jobInfoDao.scheduleUpdate(jobInfo);
         }
         return true;
+    }
+
+    private void executeRingTask(Map<Integer, List<Integer>> ringData, XxlJobInfo jobInfo) throws ParseException {
+        // 1、make ring second
+        int ringSecond = (int)((jobInfo.getTriggerNextTime()/1000)%60);
+
+        // 2、push time ring
+        pushTimeRing(ringSecond, jobInfo.getId(), ringData);
+
+        // 3、fresh next
+        refreshNextValidTime(jobInfo, new Date(jobInfo.getTriggerNextTime()));
     }
 
     private void refreshNextValidTime(XxlJobInfo jobInfo, Date fromTime) throws ParseException {
