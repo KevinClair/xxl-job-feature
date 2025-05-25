@@ -16,6 +16,7 @@ import com.xxl.job.starter.config.XxlJobExecutorConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +33,9 @@ import java.util.Properties;
  */
 @Configuration
 @EnableConfigurationProperties({XxlJobAdminConfiguration.class, XxlJobExecutorConfiguration.class})
+@ConditionalOnProperty(
+        prefix = "xxl-job.admin",
+        name = {"address", "accessToken"})
 public class XxlJobAutoConfiguration implements EnvironmentAware, InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(XxlJobAutoConfiguration.class);
@@ -41,17 +45,17 @@ public class XxlJobAutoConfiguration implements EnvironmentAware, InitializingBe
     private static final String PATH = "/META-INF/maven/com.xuxueli/xxl-job-spring-boot-starter/pom.properties";
 
     private static final String BANNAR = "\n" +
-        "██╗  ██╗██╗  ██╗██╗               ██╗ ██████╗ ██████╗ \n" +
-        "╚██╗██╔╝╚██╗██╔╝██║               ██║██╔═══██╗██╔══██╗\n" +
-        " ╚███╔╝  ╚███╔╝ ██║    █████╗     ██║██║   ██║██████╔╝\n" +
-        " ██╔██╗  ██╔██╗ ██║    ╚════╝██   ██║██║   ██║██╔══██╗\n" +
-        "██╔╝ ██╗██╔╝ ██╗███████╗     ╚█████╔╝╚██████╔╝██████╔╝\n" +
-        "╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝      ╚════╝  ╚═════╝ ╚═════╝ \n";
+            "██╗  ██╗██╗  ██╗██╗               ██╗ ██████╗ ██████╗ \n" +
+            "╚██╗██╔╝╚██╗██╔╝██║               ██║██╔═══██╗██╔══██╗\n" +
+            " ╚███╔╝  ╚███╔╝ ██║    █████╗     ██║██║   ██║██████╔╝\n" +
+            " ██╔██╗  ██╔██╗ ██║    ╚════╝██   ██║██║   ██║██╔══██╗\n" +
+            "██╔╝ ██╗██╔╝ ██╗███████╗     ╚█████╔╝╚██████╔╝██████╔╝\n" +
+            "╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝      ╚════╝  ╚═════╝ ╚═════╝ \n";
 
     private ConfigurableEnvironment environment;
 
     @Override
-    public void afterPropertiesSet() throws Exception{
+    public void afterPropertiesSet() throws Exception {
         String version = null;
         try {
             Properties properties = new Properties();
@@ -75,11 +79,7 @@ public class XxlJobAutoConfiguration implements EnvironmentAware, InitializingBe
     public XxlJobConfiguration xxlJobConfiguration(@NonNull XxlJobAdminConfiguration adminConfiguration, @NonNull XxlJobExecutorConfiguration executorConfiguration) {
         XxlJobConfiguration configuration = new XxlJobConfiguration();
         configuration.setAddress(adminConfiguration.getAddress());
-        if (!StringUtils.hasLength(adminConfiguration.getAccessToken())){
-            logger.warn("xxl-job accessToken is empty. To ensure system security, please set the accessToken.");
-        }else {
-            configuration.setAccessToken(adminConfiguration.getAccessToken());
-        }
+        configuration.setAccessToken(adminConfiguration.getAccessToken());
         if (!StringUtils.hasLength(executorConfiguration.getAppName())) {
             String applicationName = environment.getProperty("spring.application.name");
             if (!StringUtils.hasLength(applicationName)) {
@@ -96,7 +96,7 @@ public class XxlJobAutoConfiguration implements EnvironmentAware, InitializingBe
             configuration.setIp(executorConfiguration.getIp());
         }
         configuration.setPort(executorConfiguration.getPort() > 0 ? executorConfiguration.getPort() : NetUtil.findAvailablePort(9999));
-        configuration.setExecutorAddress("http://"+configuration.getIp()+":"+configuration.getPort());
+        configuration.setExecutorAddress("http://" + configuration.getIp() + ":" + configuration.getPort());
         configuration.setLogPath(executorConfiguration.getLogPath());
         configuration.setLogRetentionDays(executorConfiguration.getLogRetentionDays());
         return configuration;
@@ -154,7 +154,7 @@ public class XxlJobAutoConfiguration implements EnvironmentAware, InitializingBe
      * @return {@link XxlJobSpringExecutor}
      */
     @Bean
-    public XxlJobSpringExecutor xxlJobSpringExecutor(XxlJobConfiguration configuration){
+    public XxlJobSpringExecutor xxlJobSpringExecutor(XxlJobConfiguration configuration) {
         return new XxlJobSpringExecutor(configuration);
     }
 

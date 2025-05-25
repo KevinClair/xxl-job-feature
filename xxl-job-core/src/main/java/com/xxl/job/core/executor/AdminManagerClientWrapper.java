@@ -4,7 +4,6 @@ import com.xxl.job.common.model.RegistryParam;
 import com.xxl.job.common.service.AdminManager;
 import com.xxl.job.core.biz.client.AdminManagerClient;
 import com.xxl.job.core.executor.config.XxlJobConfiguration;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +38,7 @@ public class AdminManagerClientWrapper {
     private final AdminManager adminManager;
 
     public AdminManagerClientWrapper(XxlJobConfiguration configuration) {
-        String address = "";
-        if (StringUtils.hasText(configuration.getAddress())) {
-            address = configuration.getAddress().trim().split(",")[0];
-        }
-
+        String address = configuration.getAddress().trim().split(",")[0];
         this.adminManager = new AdminManagerClient(address.trim(), configuration.getAccessToken());
     }
 

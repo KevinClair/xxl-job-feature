@@ -138,9 +138,6 @@ public class JobHandlerRepository implements ApplicationListener<ContextRefreshe
     }
 
     private void uploadJobHandler(XxlJob xxlJob) {
-        if (!StringUtils.hasText(xxlJobConfiguration.getAddress())) {
-            return;
-        }
         SaveXxlJobInfoDto saveXxlJobInfoDto = new SaveXxlJobInfoDto();
         saveXxlJobInfoDto.setAppName(xxlJobConfiguration.getAppName());
         saveXxlJobInfoDto.setJobDesc(xxlJob.jobDesc());
