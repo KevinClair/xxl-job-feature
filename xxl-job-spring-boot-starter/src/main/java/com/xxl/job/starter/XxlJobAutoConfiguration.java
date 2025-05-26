@@ -35,7 +35,7 @@ import java.util.Properties;
 @EnableConfigurationProperties({XxlJobAdminConfiguration.class, XxlJobExecutorConfiguration.class})
 @ConditionalOnProperty(
         prefix = "xxl-job.admin",
-        name = {"address", "accessToken"})
+        name = {"address", "access-token"})
 public class XxlJobAutoConfiguration implements EnvironmentAware, InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(XxlJobAutoConfiguration.class);
