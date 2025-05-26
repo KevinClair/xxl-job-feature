@@ -7,11 +7,11 @@ import com.xxl.job.core.handler.annotation.XxlJob;
 import com.xxl.job.core.handler.impl.MethodJobHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.CollectionUtils;
@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * JobHandler管理工厂
  */
-public class JobHandlerRepository implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
+public class JobHandlerRepository implements ApplicationContextAware, DisposableBean {
 
     private static final Logger logger = LoggerFactory.getLogger(JobHandlerRepository.class);
 
@@ -45,11 +45,8 @@ public class JobHandlerRepository implements ApplicationListener<ContextRefreshe
     }
 
     @Override
-    public void onApplicationEvent(final ContextRefreshedEvent event) {
-        if (!flag.compareAndSet(false, true)) {
-            return;
-        }
-        this.initJobHandlerMethodRepository(event.getApplicationContext());
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.initJobHandlerMethodRepository(applicationContext);
     }
 
     /**
@@ -169,6 +166,9 @@ public class JobHandlerRepository implements ApplicationListener<ContextRefreshe
 
     public IJobHandler registerJobHandler(String name, IJobHandler jobHandler){
         logger.info(">>>>>>>>>>> xxl-job register jobHandler success, name:{}, jobHandler:{}", name, jobHandler);
+        if (jobHandlerRepository.containsKey(name)) {
+            throw new RuntimeException("xxl-job jobHandler[" + name + "] naming conflicts.");
+        }
         return jobHandlerRepository.put(name, jobHandler);
     }
 
