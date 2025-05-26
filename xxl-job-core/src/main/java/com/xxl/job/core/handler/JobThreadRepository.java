@@ -21,6 +21,10 @@ public class JobThreadRepository {
     /**
      * registry new job thread.
      *
+     * 此处逻辑应该调整为通过BeanDefinitionRegistry注册一个JobThread的Bean对象。name就是job的bean名称。
+     * 之后在使用时通过ApplicationContext.getBean(jobName)获取JobThread对象。
+     * 不需要时候通过BeanDefinitionRegistry动态移除JobThread对象。
+     *
      * @param jobId           id of job.
      * @param handler         handler of job.
      * @param removeOldReason the reason of removing old thread.

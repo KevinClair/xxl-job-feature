@@ -40,6 +40,14 @@ public class JobThread extends Thread{
 	private int idleTimes = 0;			// idel times
 
 
+	/**
+	 * 这个类应该调整为内部创建的是线程池，同时线程池的核心线程数，最大线程数可以通过Admin配置动态调整。另外线程池的拒绝策略也可以通过Admin配置。
+	 * 需要维护一个AtomicBoolean标志位，表示线程池是否已经被关闭。为true时才可以添加任务到线程池中。
+	 * 当该Bean实例被销毁时，需要修改AtomicBoolean标志位为false，并且通过优雅关闭的方式关闭线程池。
+	 *
+	 * @param jobId
+	 * @param handler
+	 */
 	public JobThread(int jobId, IJobHandler handler) {
 		this.jobId = jobId;
 		this.handler = handler;
