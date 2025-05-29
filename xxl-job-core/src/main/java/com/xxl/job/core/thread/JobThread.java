@@ -137,6 +137,7 @@ public class JobThread extends Thread{
 
 					// init job context
 					XxlJobContext.setXxlJobContext(xxlJobContext);
+					String executorParams = triggerParam.getExecutorParams();
 
 					// execute
 					XxlJobHelper.log("<br>----------- xxl-job job execute start -----------<br>----------- Param:" + xxlJobContext.getJobParam());
@@ -151,8 +152,7 @@ public class JobThread extends Thread{
 
 									// init job context
 									XxlJobContext.setXxlJobContext(xxlJobContext);
-
-									handler.execute();
+									handler.execute(executorParams);
 									return true;
 								}
 							});
@@ -172,7 +172,7 @@ public class JobThread extends Thread{
 						}
 					} else {
 						// just execute
-						handler.execute();
+						handler.execute(executorParams);
 					}
 
 					// valid execute handle data
