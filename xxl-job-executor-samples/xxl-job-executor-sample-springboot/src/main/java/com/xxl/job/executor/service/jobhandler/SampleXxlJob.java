@@ -35,7 +35,7 @@ public class SampleXxlJob {
      * 1、简单任务示例（Bean模式）
      */
     @XxlJob(value = "demoJobHandler", autoCreated = true, jobDesc = "测试上传job", scheduleConf = "0 0/1 * * * ?")
-    public void demoJobHandler() throws Exception {
+    public void demoJobHandler(User user) throws Exception {
         XxlJobHelper.log("XXL-JOB, Hello World.");
 
         logger.info("执行日志");

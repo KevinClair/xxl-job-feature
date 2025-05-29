@@ -13,7 +13,7 @@ public abstract class IJobHandler {
 	 *
 	 * @throws Exception
 	 */
-	public abstract void execute() throws Exception;
+	public abstract void execute(String parameters) throws Exception;
 
 
 	/*@Deprecated

@@ -45,7 +45,7 @@ public class ScriptJobHandler extends IJobHandler {
     }
 
     @Override
-    public void execute() throws Exception {
+    public void execute(String parameters) throws Exception {
 
         if (!glueType.isScript()) {
             XxlJobHelper.handleFail("glueType["+ glueType +"] invalid.");
