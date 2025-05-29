@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,5 +90,25 @@ public class JacksonUtil {
 			logger.error(e.getMessage(), e);
 		}
 		return null;
+	}
+
+	public static Object[] deserialize(String jsonStr, Class<?>[] targetTypes) throws Exception {
+		JsonNode rootNode = objectMapper.readTree(jsonStr);
+		if (!rootNode.isArray()) {
+			throw new IllegalArgumentException("Input JSON is not an array");
+		}
+
+		ArrayNode arrayNode = (ArrayNode) rootNode;
+		if (arrayNode.size() != targetTypes.length) {
+			throw new IllegalArgumentException("Array length mismatch");
+		}
+
+		Object[] result = new Object[targetTypes.length];
+		for (int i = 0; i < arrayNode.size(); i++) {
+			JsonNode elementNode = arrayNode.get(i);
+			result[i] = objectMapper.treeToValue(elementNode, targetTypes[i]);
+		}
+
+		return result;
 	}
 }
